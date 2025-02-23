@@ -3,4 +3,7 @@ export enum MessageType {
   Sticker = 'sticker',
   Image = 'image',
   Video = 'video',
+  Audio = 'audio',
+  Location = 'location',
+  Imagemap = 'imagemap',
 }
