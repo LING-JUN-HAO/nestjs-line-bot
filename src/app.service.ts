@@ -8,15 +8,21 @@ import {
   AudioMessage,
   LocationMessage,
   ImageMapMessage,
-  ImageMapAction,
-  Size,
-  Action,
-  TemplateColumn,
   TemplateImageColumn,
 } from '@line/bot-sdk';
 import { MessageType } from './types/enum/messageType';
-import { StickerMap } from './types/stickers';
-import { TemplateType, TemplateMap } from './types/templateMessage';
+import {
+  TextMessageReq,
+  StickerMessageReq,
+  ImageMessageReq,
+  VideoMessageReq,
+  AudioMessageReq,
+  LocationMessageReq,
+  ImageMapMessageReq,
+  TemplateButtonReq,
+  TemplateConfirmReq,
+  TemplateImageCarouselReq,
+} from './types/messageReq';
 
 @Injectable()
 export class AppService {
@@ -26,22 +32,26 @@ export class AppService {
    * 詳細的 Emoji 可以使用的 ID 可以參照：@link(https://developers.line.biz/en/docs/messaging-api/emoji-list/#line-emoji-definitions)
    * @see(https://developers.line.biz/en/reference/messaging-api/#text-message)
    */
-  textMessageReply(text: string): TextMessage {
+  textMessageReply(textMessageReq: TextMessageReq): TextMessage {
+    const { text, options } = textMessageReq;
+    let modifiedText = text;
+    if (options.emoji) {
+      const textArr = Array.from(text.padStart(options.emoji[0].index, '~'));
+      textArr.splice(options.emoji[0].index, 0, '$');
+      modifiedText = textArr.join('');
+    }
     const replyMessage: TextMessage = {
       type: MessageType.Text,
-      text,
-      // emojis: [
-      //   {
-      //     index: 0,
-      //     productId: '670e0cce840a8236ddd4ee4c',
-      //     emojiId: '001',
-      //   },
-      //   {
-      //     index: 2,
-      //     productId: '670e0cce840a8236ddd4ee4c',
-      //     emojiId: '002',
-      //   },
-      // ],
+      text: modifiedText,
+      ...(options.emoji && {
+        emojis: [
+          {
+            index: options.emoji[0].index,
+            productId: options.emoji[0].productId,
+            emojiId: options.emoji[0].emojiId,
+          },
+        ],
+      }),
     };
     return replyMessage;
   }
@@ -52,32 +62,31 @@ export class AppService {
    * 詳細的貼文可以使用的 ID 可以參照：@link(https://developers.line.biz/en/docs/messaging-api/sticker-list/#sticker-definitions)
    * @see(https://developers.line.biz/en/reference/messaging-api/#sticker-message)
    */
-  stickerMessageReply<
-    T extends keyof StickerMap,
-    U extends StickerMap[T][number],
-  >(packageId: T, stickerId: U): StickerMessage {
+  stickerMessageReply(stickerMessageReq: StickerMessageReq): StickerMessage {
+    const { packageId, stickerId } = stickerMessageReq;
     const replyMessage: StickerMessage = {
       type: MessageType.Sticker,
-      packageId: packageId,
-      stickerId: stickerId,
+      packageId,
+      stickerId,
     };
+    console.log('replyMessage', replyMessage);
     return replyMessage;
   }
 
   /**
    * 發送圖片訊息
    *
+   * https://i.ytimg.com/vi/RkQy3NlG1eo/hqdefault.jpg?s%E2%80%A6AIYBjgBQAE=&rs=AOn4CLDFHmOQWYoRY4jFLVhRd3MBfW20xA(圖片範例)
    * @see(https://developers.line.biz/en/reference/messaging-api/#image-message)
    */
-  imageMessageReply(
-    originalContentUrl: string,
-    previewImageUrl: string,
-  ): ImageMessage {
+  imageMessageReply(imageMessageReq: ImageMessageReq): ImageMessage {
+    const { originalContentUrl, previewImageUrl } = imageMessageReq;
     const replyMessage: ImageMessage = {
       type: MessageType.Image,
       originalContentUrl,
       previewImageUrl,
     };
+    console.log('replyMessage', replyMessage);
     return replyMessage;
   }
 
@@ -86,10 +95,8 @@ export class AppService {
    *
    * https://video-previews.elements.envatousercontent.com/h264-video-previews/defb8e5c-0743-44d6-9ee5-1f86815b1037/47548052.mp4(範例使用)
    */
-  videoMessageReply(
-    originalContentUrl: string,
-    previewImageUrl: string,
-  ): VideoMessage {
+  videoMessageReply(videoMessageReq: VideoMessageReq): VideoMessage {
+    const { originalContentUrl, previewImageUrl } = videoMessageReq;
     const replyMessage: VideoMessage = {
       type: MessageType.Video,
       originalContentUrl,
@@ -103,15 +110,15 @@ export class AppService {
    *
    * https://res.cloudinary.com/dseg0uwc9/video/upload/v1740070405/%E9%90%B5%E4%BA%BA%E8%B3%BD%E8%A6%81%E5%A4%9A%E4%B9%85_pgkjr2.m4a(範例使用)
    */
-  audioMessageReply(
-    originalContentUrl: string,
-    duration: number,
-  ): AudioMessage {
+  audioMessageReply(audioMessageReq: AudioMessageReq): AudioMessage {
+    const { originalContentUrl, duration } = audioMessageReq;
     const replyMessage: AudioMessage = {
       type: MessageType.Audio,
       originalContentUrl,
-      duration,
+      duration:
+        Math.abs(duration * 1000) === 0 ? 1000 : Math.abs(duration * 1000),
     };
+    console.log('audioMessageReply', replyMessage);
     return replyMessage;
   }
 
@@ -119,18 +126,21 @@ export class AppService {
    * 發送地址資訊
    */
   locationMessageReply(
-    title: string,
-    address: string,
-    latitude: number,
-    longitude: number,
+    locationMessageReq: LocationMessageReq,
   ): LocationMessage {
+    const { title, address, latitude, longitude } = locationMessageReq;
+    const minLatitude = -90;
+    const maxLatitude = 90;
+    const minLongitude = -180;
+    const maxLongitude = 180;
     const replyMessage: LocationMessage = {
       type: MessageType.Location,
       title,
       address,
-      latitude,
-      longitude,
+      latitude: Math.max(Math.min(latitude, maxLatitude), minLatitude),
+      longitude: Math.max(Math.min(longitude, maxLongitude), minLongitude),
     };
+    console.log('replyMessage', replyMessage);
     return replyMessage;
   }
 
@@ -140,11 +150,9 @@ export class AppService {
    * https://super-base-f61a.qd513020.workers.dev/
    */
   imageMapMessageReply(
-    baseUrl: string,
-    altText: string,
-    baseSize: Size,
-    actions: ImageMapAction[],
+    imageMapMessageReq: ImageMapMessageReq,
   ): ImageMapMessage {
+    const { baseUrl, altText, baseSize, actions } = imageMapMessageReq;
     const replyMessage: ImageMapMessage = {
       type: MessageType.Imagemap,
       baseUrl,
@@ -156,17 +164,15 @@ export class AppService {
   }
 
   /**
-   *  模板訊息 - buttons
+   *  模板訊息 - button
    *
    * https://i.ytimg.com/vi/1vvyyhteIv4/hqdefault.jpg?s…BACGAY4AUAB&rs=AOn4CLBTVFOTXnEGbTx4PnmsZTF5IiOOwg(保留使用圖片)
    */
   templateButtonMessageReply(
-    altText: string,
-    text: string,
-    actions: Action[],
-    title?: string,
-    thumbnailImageUrl?: string,
+    templateButtonReq: TemplateButtonReq,
   ): TemplateMessage {
+    const { altText, title, text, thumbnailImageUrl, actions } =
+      templateButtonReq;
     const replyMessage: TemplateMessage = {
       type: 'template',
       altText,
@@ -175,27 +181,26 @@ export class AppService {
         title,
         text,
         ...(thumbnailImageUrl ? { thumbnailImageUrl } : {}),
-        actions,
+        actions: actions.slice(0, 4),
       },
     };
     return replyMessage;
   }
 
   /**
-   *  模板訊息 - confirms
+   *  模板訊息 - confirm
    */
   templateConfirmMessageReply(
-    altText: string,
-    text: string,
-    actions: Action[],
+    templateConfirmReq: TemplateConfirmReq,
   ): TemplateMessage {
+    const { altText, text, actions } = templateConfirmReq;
     const replyMessage: TemplateMessage = {
       type: 'template',
       altText,
       template: {
         type: 'confirm',
         text,
-        actions,
+        actions: actions.slice(0, 2),
       },
     };
     return replyMessage;
@@ -205,9 +210,9 @@ export class AppService {
    *  模板訊息 - carousels
    */
   templateCarouselMessageReply(
-    altText: string,
-    columns: TemplateColumn[],
+    templateImageCarouselReq: TemplateImageCarouselReq,
   ): TemplateMessage {
+    const { altText, columns } = templateImageCarouselReq;
     const replyMessage: TemplateMessage = {
       type: 'template',
       altText,
@@ -220,7 +225,7 @@ export class AppService {
   }
 
   /**
-   *  模板訊息 - imageCarousels
+   *  模板訊息 - imageCarousel
    */
   templateImageCarouselMessageReply(
     altText: string,
@@ -235,79 +240,5 @@ export class AppService {
       },
     };
     return replyMessage;
-  }
-
-  templateMessageReply<T extends TemplateType>(
-    templateType: T,
-    altText: string,
-    options: {
-      text?: string;
-      actions?: Action[];
-      title?: string;
-      thumbnailImageUrl?: string;
-      columns?: TemplateColumn[] | TemplateImageColumn[];
-    },
-  ): TemplateMessage {
-    const { text, actions, title, thumbnailImageUrl, columns } = options;
-
-    // 使用型別斷言確保 content 的型別正確
-    let content: TemplateMap[T];
-
-    switch (templateType) {
-      case 'buttons':
-        if (!actions || actions.length === 0) {
-          throw new Error(
-            'At least one action is required for buttons template',
-          );
-        }
-        content = {
-          type: 'buttons',
-          title,
-          text: text ?? '預設值',
-          thumbnailImageUrl,
-          actions,
-        } as TemplateMap[T];
-        break;
-
-      case 'confirm':
-        if (!actions || actions.length === 0) {
-          throw new Error('Actions are required for confirm template');
-        }
-        content = {
-          type: 'confirm',
-          text,
-          actions,
-        } as TemplateMap[T];
-        break;
-
-      case 'carousel':
-        if (!columns || columns.length === 0) {
-          throw new Error('Columns are required for carousel template');
-        }
-        content = {
-          type: 'carousel',
-          columns: columns as TemplateColumn[],
-        } as TemplateMap[T];
-        break;
-
-      case 'image_carousel':
-        if (!columns || columns.length === 0) {
-          throw new Error('Columns are required for image carousel template');
-        }
-        content = {
-          type: 'image_carousel',
-          columns: columns as TemplateImageColumn[],
-        } as TemplateMap[T];
-        break;
-
-      default:
-        throw new Error(`Unknown template type: ${templateType}`);
-    }
-
-    return {
-      type: 'template',
-      altText,
-      template: content,
-    };
   }
 }

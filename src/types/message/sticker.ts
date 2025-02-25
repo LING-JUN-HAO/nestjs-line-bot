@@ -82,3 +82,10 @@ export type StickerMap = {
     { packageId: K }
   >['stickerIds'][number][];
 };
+
+export type StickerMessageReq = {
+  [K in keyof StickerMap]: {
+    packageId: K;
+    stickerId: StickerMap[K][number];
+  };
+}[keyof StickerMap];

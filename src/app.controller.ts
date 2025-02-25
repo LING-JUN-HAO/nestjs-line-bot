@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import { lineConfig } from './config/line.config';
 import * as line from '@line/bot-sdk';
 import { Request, Response } from 'express';
+import { TemplateImageCarouselReq } from './types/messageReq';
 
 @Controller('webhook')
 export class AppController {
@@ -28,25 +29,53 @@ export class AppController {
         const messageType = event.message.type;
         const replyToken = event.replyToken;
         if (messageType === 'text') {
-          const replyMessage = this.appService.templateMessageReply(
-            'buttons',
-            '請選擇',
-            {
-              text: '請選擇一個選項',
-              title: '選單',
-              thumbnailImageUrl: 'https://example.com/image.jpg',
-              actions: [
-                { type: 'message', label: '選項 1', text: '你選擇了 1' },
-                { type: 'message', label: '選項 2', text: '你選擇了 2' },
-              ],
-            },
-          );
+          const messageParams: TemplateImageCarouselReq = {
+            altText: 'templateButton',
+            columns: [
+              {
+                text: '測試1',
+                thumbnailImageUrl:
+                  'https://i.ytimg.com/vi/1vvyyhteIv4/hqdefault.jpg?s…BACGAY4AUAB&rs=AOn4CLBTVFOTXnEGbTx4PnmsZTF5IiOOwg',
+                actions: [
+                  {
+                    label: '選項1-1',
+                    type: 'message',
+                    text: '選項1-1',
+                  },
+                  {
+                    label: '選項1-2',
+                    type: 'message',
+                    text: '選項1-2',
+                  },
+                ],
+              },
+              {
+                text: '測試2',
+                thumbnailImageUrl:
+                  'https://i.ytimg.com/vi/1vvyyhteIv4/hqdefault.jpg?s…BACGAY4AUAB&rs=AOn4CLBTVFOTXnEGbTx4PnmsZTF5IiOOwg',
+                actions: [
+                  {
+                    label: '選項2-1',
+                    type: 'message',
+                    text: '選項2-1',
+                  },
+                  {
+                    label: '選項2-2',
+                    type: 'message',
+                    text: '選項2-2',
+                  },
+                ],
+              },
+            ],
+          };
+          const replyMessage =
+            this.appService.templateCarouselMessageReply(messageParams);
 
           try {
             // 使用 replyToken 回覆訊息
             const response = await this.lineClient.replyMessage({
               replyToken,
-              messages: [replyMessage],
+              messages: [replyMessage, replyMessage],
             });
             console.log('回應成功', response);
           } catch (error) {
