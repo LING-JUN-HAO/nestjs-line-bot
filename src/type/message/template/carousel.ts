@@ -1,6 +1,6 @@
 import { TemplateColumn } from '@line/bot-sdk';
 
-export type TemplateImageCarouselReq = {
+export type TemplateCarouselReq = {
   altText: string;
   columns: TemplateColumn[];
 };

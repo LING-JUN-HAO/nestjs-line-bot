@@ -10,13 +10,11 @@ type ProjectIds = [
 
 export interface TextMessageReq {
   text: string;
-  options: {
-    emoji?: [
-      {
-        index: number;
-        productId: ProjectIds[number];
-        emojiId: Emojis[number];
-      },
-    ];
-  };
+  emoji?: [
+    {
+      index: number;
+      productId: ProjectIds[number];
+      emojiId: Emojis[number];
+    },
+  ];
 }

@@ -9,7 +9,7 @@ import {
   LocationMessage,
   ImageMapMessage,
 } from '@line/bot-sdk';
-import { MessageType, TemplateType } from './type/enum/message-type';
+import { MessageType, TemplateType } from 'type/enum/message-type';
 import {
   TextMessageReq,
   StickerMessageReq,
@@ -22,10 +22,10 @@ import {
   TemplateConfirmReq,
   TemplateCarouselReq,
   TemplateImageCarouselReq,
-} from './type/message-req';
+} from 'type/message-req';
 
 @Injectable()
-export class AppService {
+export class MessageService {
   /**
    * 發送文字訊息
    * 詳細的 Emoji 可以使用的 ID 可以參照：@link(https://developers.line.biz/en/docs/messaging-api/emoji-list/#line-emoji-definitions)

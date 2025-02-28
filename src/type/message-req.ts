@@ -4,10 +4,11 @@ import { ImageMessageReq } from './message/image';
 import { VideoMessageReq } from './message/video';
 import { AudioMessageReq } from './message/audio';
 import { LocationMessageReq } from './message/location';
-import { ImageMapMessageReq } from './message/imageMap';
+import { ImageMapMessageReq } from './message/image-map';
 import { TemplateButtonReq } from './message/template/button';
 import { TemplateConfirmReq } from './message/template/confirm';
-import { TemplateImageCarouselReq } from './message/template/imageCarousel';
+import { TemplateCarouselReq } from './message/template/carousel';
+import { TemplateImageCarouselReq } from './message/template/image-carousel';
 
 export {
   TextMessageReq,
@@ -19,5 +20,6 @@ export {
   ImageMapMessageReq,
   TemplateButtonReq,
   TemplateConfirmReq,
+  TemplateCarouselReq,
   TemplateImageCarouselReq,
 };

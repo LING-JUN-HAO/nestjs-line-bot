@@ -3,11 +3,15 @@ import { AppService } from './app.service';
 import { lineConfig } from './config/line.config';
 import * as line from '@line/bot-sdk';
 import { Request, Response } from 'express';
-import { TemplateImageCarouselReq } from './types/messageReq';
+import { TemplateImageCarouselReq } from './type/message-req';
+import { LineEventHandlerService } from './line-event-handler/line-event-handler.service';
 
 @Controller('webhook')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private appService: AppService,
+    private lineEventHandlerService: LineEventHandlerService,
+  ) {}
 
   lineClient = new line.messagingApi.MessagingApiClient({
     channelAccessToken: lineConfig.channelAccessToken,
@@ -19,57 +23,42 @@ export class AppController {
     @Res() res: Response,
   ): Promise<void> {
     const events = req.body.events;
+    this.lineEventHandlerService.handler(events);
+
     console.log('events', events);
     if (events.length === 0) {
       res.status(HttpStatus.OK).send('OK');
     }
-
     const handler = async (event: line.WebhookEvent) => {
       if (event?.type === 'message') {
         const messageType = event.message.type;
         const replyToken = event.replyToken;
         if (messageType === 'text') {
           const messageParams: TemplateImageCarouselReq = {
-            altText: 'templateButton',
+            altText: 'TemplateImageConfirmReq',
             columns: [
               {
-                text: '測試1',
-                thumbnailImageUrl:
+                imageUrl:
                   'https://i.ytimg.com/vi/1vvyyhteIv4/hqdefault.jpg?s…BACGAY4AUAB&rs=AOn4CLBTVFOTXnEGbTx4PnmsZTF5IiOOwg',
-                actions: [
-                  {
-                    label: '選項1-1',
-                    type: 'message',
-                    text: '選項1-1',
-                  },
-                  {
-                    label: '選項1-2',
-                    type: 'message',
-                    text: '選項1-2',
-                  },
-                ],
+                action: {
+                  label: '選項1-1',
+                  type: 'message',
+                  text: '選項1-1',
+                },
               },
               {
-                text: '測試2',
-                thumbnailImageUrl:
+                imageUrl:
                   'https://i.ytimg.com/vi/1vvyyhteIv4/hqdefault.jpg?s…BACGAY4AUAB&rs=AOn4CLBTVFOTXnEGbTx4PnmsZTF5IiOOwg',
-                actions: [
-                  {
-                    label: '選項2-1',
-                    type: 'message',
-                    text: '選項2-1',
-                  },
-                  {
-                    label: '選項2-2',
-                    type: 'message',
-                    text: '選項2-2',
-                  },
-                ],
+                action: {
+                  label: '選項1-2',
+                  type: 'message',
+                  text: '選項1-2',
+                },
               },
             ],
           };
           const replyMessage =
-            this.appService.templateCarouselMessageReply(messageParams);
+            this.appService.templateImageCarouselMessageReply(messageParams);
 
           try {
             // 使用 replyToken 回覆訊息
