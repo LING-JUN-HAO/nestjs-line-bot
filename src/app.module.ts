@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { MessageService } from './message/message.service';
-import { LineEventHandlerService } from './line-event-handler/line-event-handler.service';
+import { GlobalModule } from './global.module';
+import { MessageService } from 'service/message/message.service';
+import { WebHookModule } from 'module/webhook/webhook.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService, MessageService, LineEventHandlerService],
+  imports: [GlobalModule, WebHookModule],
+  controllers: [],
+  providers: [MessageService],
 })
 export class AppModule {}

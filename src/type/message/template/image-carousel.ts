@@ -1,6 +1,6 @@
-import { TemplateImageColumn } from '@line/bot-sdk';
+import { messagingApi } from '@line/bot-sdk';
 
 export type TemplateImageCarouselReq = {
   altText: string;
-  columns: TemplateImageColumn[];
+  columns: messagingApi.ImageCarouselColumn[];
 };

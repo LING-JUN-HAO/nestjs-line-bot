@@ -74,6 +74,11 @@ export const stickerData = [
     title: 'UNIVERSTAR BT21: Animated Special',
     stickerIds: ['51626500', '51626501', '51626502', '51626503', '51626504'],
   },
+  {
+    packageId: '33885',
+    title: 'Brown & Cony: Animated Special',
+    stickerIds: ['744121836'],
+  },
 ] as const;
 
 export type StickerMap = {

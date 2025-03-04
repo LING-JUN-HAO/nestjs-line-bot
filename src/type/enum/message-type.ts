@@ -4,6 +4,7 @@ export enum MessageType {
   Image = 'image',
   Video = 'video',
   Audio = 'audio',
+  Flex = 'flex',
   Location = 'location',
   ImageMap = 'imagemap',
   Template = 'template',

@@ -1,3 +1,4 @@
+import { messagingApi } from '@line/bot-sdk';
 type Emojis = ['001', '002', '003', '004', '005', '006', '007', '008', '009'];
 
 type ProjectIds = [
@@ -17,4 +18,5 @@ export interface TextMessageReq {
       emojiId: Emojis[number];
     },
   ];
+  quickReplyItems?: { imageUrl?: string; action: messagingApi.Action }[];
 }

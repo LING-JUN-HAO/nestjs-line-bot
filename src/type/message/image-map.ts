@@ -1,8 +1,8 @@
-import { ImageMapAction, Size } from '@line/bot-sdk';
+import { messagingApi } from '@line/bot-sdk';
 
 export type ImageMapMessageReq = {
   baseUrl: string;
   altText: string;
-  baseSize: Size;
-  actions: ImageMapAction[];
+  baseSize: messagingApi.ImagemapBaseSize;
+  actions: messagingApi.ImagemapAction[];
 };
