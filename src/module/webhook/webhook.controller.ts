@@ -1,15 +1,18 @@
-import { Controller, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Controller, HttpStatus, Inject, Post, Req, Res } from '@nestjs/common';
 import * as line from '@line/bot-sdk';
-import { lineConfig } from 'config/line.config';
+import { LINE_CONFIG } from 'config/line.config';
 import { Request, Response } from 'express';
 import { LineEventHandlerService } from 'module/webhook/line-event-handler/line-event-handler.service';
 
 @Controller('webhook')
 export class WebhookController {
-  constructor(private lineEventHandlerService: LineEventHandlerService) {}
+  constructor(
+    private lineEventHandlerService: LineEventHandlerService,
+    @Inject(LINE_CONFIG) private readonly lineConfig: line.ClientConfig,
+  ) {}
 
   lineClient = new line.messagingApi.MessagingApiClient({
-    channelAccessToken: lineConfig.channelAccessToken,
+    channelAccessToken: this.lineConfig.channelAccessToken,
   });
 
   @Post('')
