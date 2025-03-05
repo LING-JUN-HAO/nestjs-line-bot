@@ -60,20 +60,9 @@ export class LineEventHandlerService {
     try {
       const { replyToken } = event;
       if (!replyToken) return;
-      // const { timestamp, source, message, webhookEventId } = event;
+      const { timestamp, source, message, webhookEventId } = event;
       const replyMessage = this.messageService.textMessageReply({
-        text: '你說了什麼？',
-        quickReplyItems: [
-          {
-            imageUrl:
-              'https://i.ytimg.com/vi/RkQy3NlG1eo/hqdefault.jpg?s%E2%80%A6AIYBjgBQAE=&rs=AOn4CLDFHmOQWYoRY4jFLVhRd3MBfW20xA',
-            action: {
-              type: 'message',
-              label: '我想看貓咪',
-              text: '貓咪',
-            },
-          },
-        ],
+        text: `時間戳：${timestamp}\n事件 ID：${webhookEventId}\n事件類型：${source.type}\n用戶 ID：${source.userId}\n訊息編號：${message.id}\n訊息類型：${message.type}\n訊息本體：${JSON.stringify(message)}`,
       });
       await this.lineClient.replyMessage({
         replyToken,
