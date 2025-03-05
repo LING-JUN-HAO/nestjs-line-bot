@@ -8,7 +8,7 @@
 
 ## 專案結構說明
 
-主要以修改  line-event-handler.service.ts 把處理 Message 事件的方法替換，就可以感受 LineBot 回應的不同。
+主要以修改  line-event-handler.service.ts 檔案中處理 Message 事件的方法替換，就可以感受 LineBot 回應的不同。
 
 ```text
 LINE-BOT
