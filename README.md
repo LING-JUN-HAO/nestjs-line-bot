@@ -47,7 +47,7 @@ npm install
 ### Step2：根據 .env.example 的格式，分別將已註冊的 LineBot Channel secret 及 Channel access token 放入 .env 檔案中
 
 * **Channel secret**：主要負責驗證 client 端發出請求至 /webhook route，透過 Request header 判斷 Line platform X-Line-Signature。(可於 LINE Develop Basic settings 標籤下取得)
-* **Channel access token**：主要用於驗證 Bot Server 身份。(可於 LINE Develop Messaging API 標籤下取得)
+* **Channel access token**：主要用於驗證 Bot Server 是否有官方帳號頻道權限。(可於 LINE Develop Messaging API 標籤下取得)
 
 ## 啟動方式
 
